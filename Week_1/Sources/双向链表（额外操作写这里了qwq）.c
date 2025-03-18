@@ -193,6 +193,7 @@ int main()
 		{
 			printf("·Ç»·\n");
 			print(head);
+			dodelete(head,7.5); 
 			find_middle(head);
 			change_singleanddouble(head); 
 			print(head);
