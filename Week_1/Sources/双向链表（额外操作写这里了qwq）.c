@@ -125,16 +125,16 @@ void find_middle(struct chain* head)
         printf("too short!\n");
         return;
    		}
-    struct chain* slow = head;
-    struct chain* fast = head;
+    struct chain* slow = head;//慢指针 
+    struct chain* fast = head;//快指针 
     while(fast!=NULL&&fast->next!=NULL) 
 		{
-        slow=slow->next;
-        fast=fast->next->next;
+        slow=slow->next; //走一步 
+        fast=fast->next->next;//走两步 
    		}
-    if (fast!=NULL)     // 如果链表长度是奇数，慢指针需要再移动一次
+    if (fast!=NULL)     
 		{
-        slow=slow->next;
+        slow=slow->next;//如果链表长度是奇数，慢指针需要再移动一次
     	}
     printf("mid= %f\n",slow->data);
 }//找中 
@@ -188,7 +188,7 @@ int main()
 	doinsert(head,2.5);
 	doinsert(head,7.5);
 	doinsert(head,4.9);
-	doinsert(head,7.1);
+	doinsert(head,7.1);//输入数据 
 	if (check_cycle(head)==0)
 		{
 			printf("非环\n");
@@ -199,7 +199,7 @@ int main()
 			print(head);
 			find_middle(head);
 		}
-
+	system("pause"); 
 }
 
 

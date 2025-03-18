@@ -41,23 +41,23 @@ void doinsert(struct chain* head,float newvalue)
 void dodelete(struct chain* head,float delete_value)
 {
 	struct chain* nowdic=head;
-	if(head->data==delete_value)
+	if(head->data==delete_value)//若删除的为头结点 
 		{
 		struct chain* forfree=head;
-		head=head->next;
-		free(forfree);
+		head=head->next;//移动头节点 
+		free(forfree);//释放内存 
 		}
 	while(nowdic->next != null)
 		{
-		if(nowdic->next->data==delete_value)
+		if(nowdic->next->data==delete_value)//找到目标数据 
 			{
 			struct chain*tem=nowdic->next;
-			nowdic->next=nowdic->next->next;
-			free(tem);
+			nowdic->next=nowdic->next->next;//将被删除的前一个节点的指针调整 
+			free(tem);//释放内存 
 			printf("已删除:%f\n",delete_value);
 			return;	
 			}	
-			nowdic=nowdic->next;
+			nowdic=nowdic->next;//步进 
 		}
 	
 }//删除指定数据 
@@ -67,7 +67,7 @@ void print(struct chain* head)
 	struct chain* nowdic=head->next;
 	while(nowdic != null)
 		{
-		printf("%f -> ",nowdic->data);
+		printf("%f -> ",nowdic->data);//打印 
 		nowdic=nowdic->next;//遍历 
 		}
 	printf("NULL\n");
@@ -81,9 +81,10 @@ int main()
 	doinsert(head,2.5);
 	doinsert(head,7.5);
 	doinsert(head,4.9);
-	doinsert(head,7.1);
+	doinsert(head,7.1);//输入数据 
 	print(head);
 	dodelete(head,7.5); 
 	print(head); 
+	system("pause"); 
 
 }
