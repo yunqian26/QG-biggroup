@@ -19,8 +19,11 @@ struct chain* create()
 	return head;
 }//创建链表 
 
-void doinsert(struct chain* head,float newvalue)
+void doinsert(struct chain* head)
 {
+	float newvalue;
+	printf("请输入需要插入的数值：");
+	scanf("%f",&newvalue);
 	struct chain* p1;
 	p1=(struct chain*)malloc(len);
 	if (p1==null)
@@ -38,8 +41,11 @@ void doinsert(struct chain* head,float newvalue)
 	nowdic->next=p1;//插点 
 }//尾插 
 
-void dodelete(struct chain* head,float delete_value)
+void dodelete(struct chain* head)
 {
+	float delete_value;
+	printf("请输入需要删除的数值：");
+	scanf("%f",&delete_value);
 	struct chain* nowdic=head;
 	if(head->data==delete_value)//若删除的为头结点 
 		{
@@ -73,18 +79,47 @@ void print(struct chain* head)
 	printf("NULL\n");
 }//打印 
 
+int menu()
+{
+	int i,choice;
+	char order[100];
+	for (i=0;i<25;i++)
+	{
+		printf("*");
+	}
+	printf("\n");
+	printf("*%*s[^._.^]?彡你好！   *\n",4," ");
+	printf("选择你的操作：\n");
+	printf("1.显示当前链表\n");
+	printf("2.插入节点(尾插)\n");
+	printf("3.删除指定元素\n");
+	printf("4.退出程序\n");
+	printf("5.清屏qwq\n");
+	
+	scanf("%s",&order);//接收字符串防止输入字母错误 
+	choice=order[0]-'0';//转换至整型类型数字 
+	return choice;
+}
+
 int main()
 {
 	struct chain* head=create();
-	doinsert(head,1.5);
-	doinsert(head,8.5);
-	doinsert(head,2.5);
-	doinsert(head,7.5);
-	doinsert(head,4.9);
-	doinsert(head,7.1);//输入数据 
-	print(head);
-	dodelete(head,7.5); 
-	print(head); 
+	int choice=0;
+	while(1)
+	{
+	choice=menu();
+	switch(choice)
+		{
+		case 1:print(head);break;
+		case 2:doinsert(head);break;
+		case 3:dodelete(head);break;
+		case 4:exit(0);
+		case 5:system("cls");break;
+		default:break;
+		} 
+	}
+	
+	
 	system("pause"); 
 
 }

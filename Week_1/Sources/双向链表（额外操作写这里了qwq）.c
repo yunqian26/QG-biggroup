@@ -22,8 +22,11 @@ struct chain*create()
 	return head;
 }//创建链表 
 
-void doinsert(struct chain* head,float newvalue)
+void doinsert(struct chain* head)
 {
+	float newvalue;
+	printf("请输入需要插入的数值：");
+	scanf("%f",&newvalue);
 	struct chain* p1;
 	p1=(struct chain*)malloc(len);
 	if (p1==null)
@@ -43,8 +46,11 @@ void doinsert(struct chain* head,float newvalue)
 	nowdic->next=p1;//插点 
 }//尾插 
 
-void dodelete(struct chain* head,float delete_value)
+void dodelete(struct chain* head)
 {
+	float delete_value;
+	printf("请输入需要删除的数值：");
+	scanf("%f",&delete_value);
 	struct chain* nowdic=head->next;
 	while(nowdic!=null)
 		{
@@ -66,11 +72,12 @@ void dodelete(struct chain* head,float delete_value)
 		printf("未找到%f\n",delete_value);
 }//删除指定数据 
 
-int check_cycle(struct chain* head)
+void check_cycle(struct chain* head)
 {
 	if(head==null||head->next==null)
 		{
-		return 0;//显然不是环 
+		printf("非环！\n");
+		return;//显然不是环 
 		}
 	struct chain* slowchecker=head->next;//慢 
 	struct chain* fastchecker=head->next->next;//快 
@@ -79,18 +86,20 @@ int check_cycle(struct chain* head)
 		{
 		if(slowchecker==fastchecker)
 			{
-			return 1;//成环！ 
+			printf("成环！\n");
+			return;//成环！ 
 			}
 		slowchecker=slowchecker->next;//走一步 
 		fastchecker=fastchecker->next->next;//走两步	
 		}
-	return 0;
+	printf("非环！\n");
 	
 }//检查成环 
 
 void print(struct chain* head)
 {
 	struct chain* nowdic=head->next;
+	printf("链表为：\n");
 	while(nowdic != null)
 		{
 		printf("%f <-> ",nowdic->data);
@@ -141,11 +150,12 @@ void find_middle(struct chain* head)
 
 void reverse(struct chain* head,struct chain** head_location)
 {
-	if(head==null)
+	if(head==null||head->next)
 		{
+		*head_location=head;
 		return;
 		}
-		
+		reverse(head->prev,head_location);//递归交换 
 	struct chain* tem=head->prev;//交换指针，前换为后，后换为前  
 	head->prev=head->next;
 	head->next=tem;
@@ -154,23 +164,21 @@ void reverse(struct chain* head,struct chain** head_location)
 		{
 		*head_location=head;//走到头，更新头结点 
 		}
-	else
-		{
-		reverse(head->prev,head_location);//递归交换 
-		}
+
 }//递归反转 
 
 void reversenon(struct chain** head) {
-    if (*head == NULL )
+    if (*head==null||(*head)->next==null )
 		{
         return;
     	}
-    struct chain* nowdic = *head;
-    struct chain* tem = NULL;
+    struct chain* nowdic = *head;//导入头结点 
+    struct chain* tem = NULL;//悬空暂用 
+    
     while (nowdic != NULL) 
 		{
-        tem = nowdic->prev;
-        nowdic->prev = nowdic->next;
+        tem = nowdic->prev;//将当前节点的上一个节点存储 
+        nowdic->prev = nowdic->next;//前后指针互换 
         nowdic->next = tem;//交换 
         nowdic = nowdic->prev;//遍历 
     	}
@@ -180,25 +188,55 @@ void reversenon(struct chain** head) {
     	}
 }//非递归反转 
 
+int menu()
+{
+	int i,choice;
+	char order[100];
+	for (i=0;i<25;i++)
+	{
+		printf("*");
+	}
+	printf("\n");
+	printf("*%*s[^._.^]?彡你好！   *\n",4," ");
+	printf("选择你的操作：\n");
+	printf("1.显示当前链表\n");
+	printf("2.插入节点(尾插)\n");
+	printf("3.删除指定元素\n");
+	printf("4.检查是否成环\n");
+	printf("5.奇偶位置交换\n");
+	printf("6.递归反转\n");
+	printf("7.非递归反转（似乎会出现暂时无法解决的问题）\n");
+	printf("8.寻找中点\n");
+	printf("9.退出程序\n");
+	
+	scanf("%s",&order);//接收字符串防止输入字母错误 
+	choice=order[0]-'0';//转换至整型类型数字 
+	return choice;
+}
+
 int main()
 {
 	struct chain* head=create();
-	doinsert(head,1.5);
-	doinsert(head,8.5);
-	doinsert(head,2.5);
-	doinsert(head,7.5);
-	doinsert(head,4.9);
-	doinsert(head,7.1);//输入数据 
-	if (check_cycle(head)==0)
+	int choice=0;
+	while(1)
+	{
+	choice=menu();
+	system("cls");
+	switch(choice)
 		{
-			printf("非环\n");
-			print(head);
-			dodelete(head,7.5); 
-			find_middle(head);
-			change_singleanddouble(head); 
-			print(head);
-			find_middle(head);
-		}
+		case 1:print(head);break;
+		case 2:doinsert(head);break;
+		case 3:dodelete(head);break;
+		case 4:check_cycle(head);break;
+		case 5:change_singleanddouble(head);break;
+		case 6:reverse(head,&head);break;
+		case 7:reversenon(&head);break;
+		case 8:find_middle(head);
+		case 9:exit(0);
+		default:break;
+		} 
+	}
+	
 	system("pause"); 
 }
 
