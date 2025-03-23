@@ -41,7 +41,7 @@ char pop(type_s *stack)
 {
 	if(check_empty(stack))
 	{
-		printf("该栈中没有元素\n");
+		printf("该栈中没有元素(pop)\n");
 		return;
 	}
 	type* tem=stack->top;//存储栈顶指针 
@@ -55,7 +55,7 @@ char peek(type_s *stack)
 {
 	if(check_empty(stack))
 	{
-		printf("该栈中没有元素\n");
+		printf("该栈中没有元素(peek)\n");
 		return;
 	}
 	return stack->top->data;//返回栈顶数据 
@@ -86,7 +86,7 @@ int precedence(char operation)
 {
 	if(operation=='+'||operation=='-') return 1;//若加减则为1优先级 
 	else if(operation=='*'||operation=='/') return 2;//若乘除则为2优先级 
-	return 0;
+	return 3;
 }
 
 int check_space(char operation)
@@ -101,67 +101,102 @@ int check_number(char operation)
 	else return 0;
 }
 
-void change_perform(char *orgin,char*outformula)
+void change_perform(char *orgin,char*numbers)
 {
+//	type_s operators;
+//	start_stack(&operators);//初始化栈 
+//	int i=0,j=0;
+//	for(i=0;orgin[i]!='\0';i++)//在遇到输入式子的结束符前 
+//	{
+//		if(check_space(orgin[i])) continue;
+//			else if(check_number(orgin[i]))
+//			{
+//				while(check_number(orgin[i]))
+//				{
+//					outformula[j++]=orgin[i++];//舍去空格 ，将所有数字放进后缀表达式中 
+//				}
+//			}
+//			
+//			else if(orgin[i]=='+'||orgin[i]=='-'||orgin[i]=='*'||orgin[i]=='/') push(&operators,orgin[i]);
+//			else if(orgin[i]=='(') 	push(&operators,orgin[i]);//前括号则入栈 
+//			else if(orgin[i]==')')	//遇到后括号的时候 
+//			{
+//				while(check_empty(&operators)&&peek(&operators)!='(')//若此时栈不为空且栈顶不为前括号 
+//				{
+//					outformula[j++]=pop(&operators);//将栈顶操作输出到后缀表达式中 
+//					//跳过符号位置，将索引放置到空位置方便输入 
+//				}
+//				pop(&operators);//否则则入栈 
+//			}//将所有运算符推入栈中 
+//	}
+//	while(!check_empty(&operators))
+//		{
+//		outformula[j++]=pop(&operators); 
+//		
+//		}//将运算符逐步弹出栈	
+//	
+//	outformula[j]='\0';//数组结束符 
+//	destory(&operators);//释放内存 
+//	
 	type_s operators;
-	start_stack(&operators);//初始化栈 
+	start_stack(&operators);
 	int i=0,j=0;
-	for(i=0;orgin[i]!='\0';i++)//在遇到输入式子的结束符前 
-	{
-		if(check_space(orgin[i])) continue;
-			else if(check_number(orgin[i]))
+	for (i=0;orgin[i]!='\0';i++)
+		{
+		while(check_space(orgin[i])) continue;//遇到空格/字母跳过
+		if(check_number(orgin[i]))
+			{	
+			numbers[j++]=orgin[i];		
+			} 
+		else if(orgin[i]=='+'||orgin[i]=='-'||orgin[i]=='*'||orgin[i]=='/') 
 			{
-				while(check_number(orgin[i]))
+			if(check_empty(&operators)==0)
 				{
-					outformula[j++]=orgin[i++];//舍去空格 ，将所有数字放进后缀表达式中 
+					if(precedence(orgin[i])<precedence(peek(&operators)))
+					{
+					numbers[j++]=pop(&operators);
+					push(&operators,orgin[i]);
+					}
+				else 
+					{
+					push(&operators,orgin[i]);
+					}
+				}
+			else push(&operators,orgin[i]);
+			}
+		else if(orgin[i]=='(')  push(&operators,orgin[i]);
+		else if(orgin[i]==')')
+			{
+			while(check_empty(&operators)==0)
+				{
+				if(peek(&operators)=='(') pop(&operators);break;
+				numbers[j++]=pop(&operators);
 				}
 			}
-			else if(orgin[i]=='(') 	push(&operators,orgin[i]);//前括号则入栈 
-			else if(orgin[i]==')')	//遇到后括号的时候 
-			{
-				while(check_empty(&operators)&&peek(&operators)!='(')//若此时栈不为空且栈顶不为前括号 
-				{
-					outformula[j++]=pop(&operators);//将栈顶操作输出到后缀表达式中 
-					j++;//跳过符号位置，将索引放置到空位置方便输入 
-				}
-				push(&operators,orgin[i]);//否则则入栈 
-			}//将所有运算符推入栈中 
-	}
-	while(!check_empty(&operators))
+		}
+	
+	while(check_empty(&operators)==0)
 		{
-		outformula[j++]=pop(&operators); 
-		j++;
-		}//将运算符逐步弹出栈	
-	
-	outformula[j]='\0';//数组结束符 
-	destory(&operators);//释放内存 
-	
+		numbers[j++]=pop(&operators);	
+		}
+	numbers[j]='\0';
+	destory(&operators);
 }
 
-float calculate_fix(char *formula_back) 
+float calculate_fix(char *formula) 
 {
 	type_s value;
 	start_stack(&value);
 	int i=0;
-	float result;
-	while(formula_back[i]!='\0')
+	float result=0;
+	for (i=0;formula[i]!='\0';i++)
 		{
-		if (check_space(formula_back[i])) i++;
-		else if(check_number(formula_back[i]))
-			{
-			int num=0;
-			while(check_number(formula_back[i]))
-				{
-				num=num*10+formula_back[i];
-				i++;
-				}
-			push(&value,num);
-			}
+		if(check_number(formula[i])) push(&value,formula[i]);
 		else
 			{
-			int a=pop(&value);//更靠近栈顶 
-			int b=pop(&value);//更靠近栈底 
-			switch(formula_back[i])
+			int a=pop(&value)-'0';//更靠近栈顶 
+			int b=pop(&value)-'0';//更靠近栈底 
+			switch(formula[i])
 				{
 				case '+':push(&value,b+a);break;
 				case '-':push(&value,b-a);break;
@@ -174,7 +209,6 @@ float calculate_fix(char *formula_back)
 					}
 				push(&value,b/a);break;
 				}
-			i++;
 			}
 		}
 	result=pop(&value);
@@ -207,12 +241,12 @@ void doit_all()
 	getchar();
 	printf("输入你需要计算的算式！，可以包含括号或字母（会跳过）:\n");
 	char formula[108];
-	char back_formula[100];
+	char numbers[100];
 	gets(formula);
-	formula[strlen(formula)-1]='\0';
-	change_perform(formula,back_formula);
-	printf("后缀表达式：%s\n",back_formula);
-	float result=calculate_fix(back_formula);
+	formula[strlen(formula)]='\0';
+	change_perform(formula,numbers);
+	printf("后缀表达式：%s\n",numbers);
+	float result=calculate_fix(numbers);
 	printf("算式结果(保留两位小数)：%.2f\n",result);
 	system("pause");
 	return;
