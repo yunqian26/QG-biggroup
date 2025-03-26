@@ -12,18 +12,22 @@ typedef struct {
     type *top;
 } type_s; // 栈顶指针
 
-void start_stack(type_s *stack) {
+void start_stack(type_s *stack) 
+{
     stack->top = null; // 初始化栈
 }
 
-int check_empty(type_s *stack) {
+int check_empty(type_s *stack) 
+{
     if (stack->top == null) return 1; // 若栈顶为空则栈为空
     else return 0; // 若栈顶不为空则栈不为空
 }
 
-void push(type_s *stack, char value) {
+void push(type_s *stack, char value) 
+{
     type *newpoint = (type*)malloc(sizeof(type)); // 申请分配内存
-    if (newpoint == null) {
+    if (newpoint == null) 
+	{
         printf("分配空间失败\n");
         exit(1);
     }
@@ -32,8 +36,10 @@ void push(type_s *stack, char value) {
     stack->top = newpoint; // 移动栈顶指针
 }
 
-char pop(type_s *stack) {
-    if (check_empty(stack)) {
+char pop(type_s *stack) 
+{
+    if (check_empty(stack)) 
+	{
         printf("该栈中没有元素(pop)\n");
         return '\0';
     }
@@ -44,37 +50,45 @@ char pop(type_s *stack) {
     return value; // 返回栈顶数据
 }
 
-char peek(type_s *stack) {
-    if (check_empty(stack)) {
+char peek(type_s *stack) 
+{
+    if (check_empty(stack)) 
+	{
         printf("该栈中没有元素(peek)\n");
         return '\0';
     }
     return stack->top->data; // 返回栈顶数据
 }
 
-void destory(type_s *stack) {
-    while (!check_empty(stack)) {
+void destory(type_s *stack) 
+{
+    while (!check_empty(stack)) 
+	{
         pop(stack); // 弹出栈所有数据直至栈为空
     }
 }
 
-void print(type_s *stack) {
+void print(type_s *stack) 
+{
     printf("栈：");
     type *nowpoint = stack->top; // 从栈顶开始输出
-    while (nowpoint != null) {
+    while (nowpoint != null) 
+	{
         printf("%c", nowpoint->data); // 输出
         nowpoint = nowpoint->next; // 移动
     }
     stack->top = null; // 指针悬空
 }
 
-int precedence(char operation) {
+int precedence(char operation) 
+{
     if (operation == '+' || operation == '-') return 1; // 若加减则为1优先级
     else if (operation == '*' || operation == '/') return 2; // 若乘除则为2优先级
     return 0;
 }
 
-int check_space(char operation) {
+int check_space(char operation) 
+{
     if (operation == ' ' || (operation >= 'A' && operation <= 'z')) return 1; // 为空格返回1，否则为0
     else return 0;
 }
@@ -84,100 +98,122 @@ int check_number(char operation) {
     else return 0;
 }
 
-void change_perform(char *orgin, char *numbers) {
+void change_perform(char *orgin, char *numbers) 
+{
     type_s operators;
     start_stack(&operators);
     int i = 0, j = 0;
-    for (i = 0; orgin[i] != '\0'; i++) {
+    for (i = 0; orgin[i] != '\0'; i++) 
+	{
         if (check_space(orgin[i])) continue; // 遇到空格/字母跳过
         if (check_number(orgin[i])) {
             numbers[j++] = orgin[i];
-        } else if (orgin[i] == '+' || orgin[i] == '-') {
-            if (!check_empty(&operators)) {
-                if (precedence(orgin[i]) < precedence(peek(&operators))) {
-                    numbers[j++] = pop(&operators);
-                    push(&operators, orgin[i]);
-                } else {
-                    push(&operators, orgin[i]);
-                }
-            } else {
-                push(&operators, orgin[i]);
+        } else if (orgin[i] == '+' || orgin[i] == '-') //加减号入栈 
+		{ 
+            if (!check_empty(&operators)) //当不为空 
+			{
+                if (precedence(orgin[i]) < precedence(peek(&operators))) //若优先级小于栈顶 
+					{
+                    numbers[j++] = pop(&operators);//则栈顶出栈 
+                    push(&operators, orgin[i]);//推入加减号 
+                	} 
+					else 
+					{
+                    push(&operators, orgin[i]);//其余情况直接入栈 
+                	}
+            } 
+			else 
+			{
+            push(&operators, orgin[i]);//为空直接入栈 
             }
-        } else if (orgin[i] == '(' || orgin[i] == '*' || orgin[i] == '/') {
+        } 
+		else if (orgin[i] == '(' || orgin[i] == '*' || orgin[i] == '/') //左括号与乘除号直接入栈 
+			{
             push(&operators, orgin[i]);
-        } else if (orgin[i] == ')') { // 处理右括号
-            while (!check_empty(&operators) && peek(&operators) != '(') {
-                numbers[j++] = pop(&operators);
-            }
-            if (!check_empty(&operators) && peek(&operators) == '(') {
+        	} 
+			else if (orgin[i] == ')')  
+			{ // 处理右括号
+           	while (!check_empty(&operators) && peek(&operators) != '(') 
+				{
+                numbers[j++] = pop(&operators);//出栈所有运算符直至左括号 
+            	}
+            if (!check_empty(&operators) && peek(&operators) == '(') 
+				{
                 pop(&operators); // 弹出左括号
-            }
-        } else {
-            printf("检测到异常字符:%c,请检查输入格式\n", orgin[i]);
+            	}
+        	} 
+		else 
+			{
+            printf("检测到异常字符:%c,请检查输入格式\n", orgin[i]);//异常处理 
             exit(1);
-        }
+        	}
     }
 
-    while (!check_empty(&operators)) {
+    while (!check_empty(&operators))//弹出运算符 
+		{
         numbers[j++] = pop(&operators);
-    }
-    numbers[j] = '\0';
-    int k = 0;
-    for (i = 0; numbers[i] != '\0'; i++) {
-        if (numbers[i] != '(') {
-            numbers[k++] = numbers[i];
-        }
-    }
-    numbers[k] = '\0';
-    destory(&operators);
+    	}
+    numbers[j] = '\0';//增加结束符 
+    destory(&operators);//释放内存 
 }
 
-float calculate_fix(char *formula) {
+float calculate_fix(char *formula) 
+{
     type_s value;
     start_stack(&value);
-    int i = 0;
-    float result = 0;
-    for (i = 0; formula[i] != '\0'; i++) {
-        if (check_number(formula[i])) {
+    int i=0;
+    float result=0;
+    for (i=0; formula[i]!='\0'; i++) 
+	{
+        if (check_number(formula[i])) 
+		{
             push(&value, formula[i]);
-        } else {
-            if (check_empty(&value)) {
+        } 
+		else 
+		{
+            if (check_empty(&value)) 
+			{
                 exit(1);
             }
-            int a = pop(&value) - '0'; // 更靠近栈顶
-            int b = 0;
-            if (!check_empty(&value)) {
-                b = pop(&value) - '0'; // 更靠近栈底
+            int a=pop(&value)-'0'; // 更靠近栈顶
+            int b=0;
+            if (!check_empty(&value)) 
+			{
+                b=pop(&value)-'0'; // 更靠近栈底
             }
-            switch (formula[i]) {
+            switch (formula[i])
+			{
                 case '+':
-                    push(&value, b + a + '0');
+                    push(&value, b+a+'0'); 
                     break;
                 case '-':
-                    push(&value, b - a + '0');
+                    push(&value, b-a+'0');
                     break;
                 case '*':
-                    push(&value, b * a + '0');
+                    push(&value, b*a+ 0');
                     break;
                 case '/':
-                    if (a == 0) {
+                    if (a==0) 
+					{
                         printf("被除数为0！\n");
                         exit(1);
                     }
-                    push(&value, b / a + '0');
+                    push(&value, b/a + '0');//运算后将结果推回 
                     break;
             }
         }
     }
-    result = pop(&value) - '0';
+    result = pop(&value)-'0';//转为数字 
     destory(&value);
-    return result;
+    return result;//返回 
 }
 
-int menu() {
+int menu() 
+{
     int i, choice;
     char order[100];
-    for (i = 0; i < 25; i++) {
+    for (i = 0; i < 25; i++)
+	{
         printf("*");
     }
     printf("\n");
@@ -191,7 +227,8 @@ int menu() {
     return choice;
 }
 
-void doit_all() {
+void doit_all() 
+{
     getchar();
     printf("输入你需要计算的算式！，可以包含括号或字母（会跳过）:\n");
     char formula[108];
@@ -206,11 +243,14 @@ void doit_all() {
     return;
 }
 
-int main() {
+int main() 
+{
     int choice = 0;
-    while (1) {
+    while (1) 
+	{
         choice = menu();
-        switch (choice) {
+        switch (choice)
+		{
             case 1:
                 doit_all();
                 break;
